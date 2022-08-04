@@ -1,12 +1,12 @@
 export default class Slide {
   constructor(slide, wrapper) {
-    this.slide = document.querySelector(slide);
+    this.slide = document.querySelector(slide)
     this.wrapper = document.querySelector(wrapper);
     this.dist = { finalPosition: 0, startX: 0, movement: 0 }
   }
 
   moveSlide(distX) {
-    this.dist.movePosition = distX
+    this.dist.movePosition = distX;
     this.slide.style.transform = `translate3d(${distX}px, 0, 0)`;
   }
 
@@ -32,10 +32,10 @@ export default class Slide {
     const pointerPosition = (event.type === 'mousemove') ? event.clientX : event.changedTouches[0].clientX;
     const finalPosition = this.updatePosition(pointerPosition);
     this.moveSlide(finalPosition);
-  } 
+  }
 
   onEnd(event) {
-    const movetype = (event.type === 'mouveup') ? 'nouvemove' : 'touchmove';
+    const movetype = (event.type === 'mouseup') ? 'mousemove' : 'touchmove';
     this.wrapper.removeEventListener(movetype, this.onMove);
     this.dist.finalPosition = this.dist.movePosition;
   }
