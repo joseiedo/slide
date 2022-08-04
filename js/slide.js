@@ -1,6 +1,6 @@
 import debounce from './debounce.js';
 
-export default class Slide {
+export class Slide {
   constructor(slide, wrapper) {
     this.slide = document.querySelector(slide)
     this.wrapper = document.querySelector(wrapper);
@@ -77,14 +77,14 @@ export default class Slide {
   slidesConfig() {
     this.slideArray = [...this.slide.children].map((element) => {
       const position = this.slidePosition(element);
-      return { position, element }
+      return { position, element };
     });
   }
 
   slidesIndexNav(index) {
     const last = this.slideArray.length - 1;
     this.index = {
-      prev: index ? index -1 : undefined,
+      prev: index ? index - 1 : undefined,
       active: index,
       next: index === last ? undefined : index + 1,
     }
@@ -92,31 +92,30 @@ export default class Slide {
 
   changeSlide(index) {
     const activeSlide = this.slideArray[index];
-    this.moveSlide(this.slideArray[index].position);
+    this.moveSlide(activeSlide.position);
     this.slidesIndexNav(index);
-    this.dist.finalPosition = activeSlide.position
+    this.dist.finalPosition = activeSlide.position;
     this.changeActiveClass();
   }
 
-  // navegacao
   changeActiveClass() {
-    this.slideArray.forEach((item) => item.element.classList.remove(this.activeClass));
+    this.slideArray.forEach(item => item.element.classList.remove(this.activeClass));
     this.slideArray[this.index.active].element.classList.add(this.activeClass);
   }
 
   activePrevSlide() {
-    if(this.index.prev !== undefined) this.changeSlide(this.index.prev);
+    if (this.index.prev !== undefined) this.changeSlide(this.index.prev);
   }
 
   activeNextSlide() {
-    if(this.index.next !== undefined) this.changeSlide(this.index.next);
+    if (this.index.next !== undefined) this.changeSlide(this.index.next);
   }
 
   onResize() {
     setTimeout(() => {
       this.slidesConfig();
-      this.changeSlide(this.index.active);  
-    }, 300)
+      this.changeSlide(this.index.active);
+    }, 1000);
   }
 
   addResizeEvent() {
@@ -127,15 +126,33 @@ export default class Slide {
     this.onStart = this.onStart.bind(this);
     this.onMove = this.onMove.bind(this);
     this.onEnd = this.onEnd.bind(this);
+
+    this.activePrevSlide = this.activePrevSlide.bind(this);
+    this.activeNextSlide = this.activeNextSlide.bind(this);
+
     this.onResize = debounce(this.onResize.bind(this), 200);
   }
 
   init() {
-    this.transition(true);
     this.bindEvents();
+    this.transition(true);
     this.addSlideEvents();
     this.slidesConfig();
     this.addResizeEvent();
+    this.changeSlide(0);
     return this;
+  }
+}
+
+export class SlideNav extends Slide {
+  addArrow(prev, next) {
+    this.prevElement = document.querySelector(prev);
+    this.nextElement = document.querySelector(next);
+    this.addArrowEvent();
+  }
+
+  addArrowEvent() {
+    this.prevElement.addEventListener('click', this.activePrevSlide);
+    this.nextElement.addEventListener('click', this.activeNextSlide);
   }
 }
